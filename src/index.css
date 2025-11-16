@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Minimalist elegant palette */
+  --background: 0 0% 98%;
+  --foreground: 240 10% 15%;
+  --card: 0 0% 100%;
+  --card-foreground: 240 10% 15%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 240 10% 15%;
+  --primary: 240 10% 25%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 240 5% 90%;
+  --secondary-foreground: 240 10% 25%;
+  --muted: 240 5% 92%;
+  --muted-foreground: 240 5% 50%;
+  --accent: 38 92% 50%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 240 5% 95%;
+  --input: 240 5% 96%;
+  --ring: 240 10% 25%;
+  --radius: 0.625rem;
+}
+
+.dark {
+  --background: 240 10% 12%;
+  --foreground: 0 0% 95%;
+  --card: 240 10% 15%;
+  --card-foreground: 0 0% 95%;
+  --popover: 240 10% 15%;
+  --popover-foreground: 0 0% 95%;
+  --primary: 38 92% 50%;
+  --primary-foreground: 240 10% 12%;
+  --secondary: 240 10% 20%;
+  --secondary-foreground: 0 0% 95%;
+  --muted: 240 10% 25%;
+  --muted-foreground: 240 5% 65%;
+  --accent: 38 92% 60%;
+  --accent-foreground: 240 10% 12%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 95%;
+  --border: 240 10% 20%;
+  --input: 240 10% 18%;
+  --ring: 38 92% 50%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-semibold;
+  }
+
+  a {
+    @apply transition-colors;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-slide-down {
+  animation: slideDown 0.5s ease-out;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
