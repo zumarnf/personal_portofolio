@@ -1,16 +1,16 @@
-import { useState } from 'react'
-import { Menu, X } from 'lucide-react'
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
 
 export default function Navigation() {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
 
   const navItems = [
-    { label: 'About', href: '#about' },
-    { label: 'Experience', href: '#experience' },
-    { label: 'Projects', href: '#projects' },
-    { label: 'Skills', href: '#skills' },
-    { label: 'Contact', href: '#contact' },
-  ]
+    { label: "About", href: "#about" },
+    { label: "Experience", href: "#experience" },
+    { label: "Projects", href: "#projects" },
+    { label: "Skills", href: "#skills" },
+    { label: "Contact", href: "#contact" },
+  ];
 
   return (
     <nav className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur-sm border-b border-border">
@@ -34,7 +34,6 @@ export default function Navigation() {
             ))}
           </div>
 
-          {/* Theme Toggle & Mobile Menu */}
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="md:hidden p-2 rounded-lg hover:bg-muted transition-colors"
@@ -60,5 +59,5 @@ export default function Navigation() {
         )}
       </div>
     </nav>
-  )
+  );
 }
