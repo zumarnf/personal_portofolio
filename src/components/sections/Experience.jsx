@@ -1,32 +1,12 @@
+import { experiences } from "@/data/experience";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
+
 export default function Experience() {
-  const experiences = [
-    {
-      role: 'Frontend Web Developer Intern',
-      company: 'Telkom University SPM',
-      period: 'September 2024 – January 2025',
-      location: 'Surabaya, Indonesia',
-      highlights: [
-        'Designed and developed minimalist, user-centric wireframes and prototypes for the internal SPMIA website',
-        'Created an intuitive platform that streamlined access to critical accreditation information',
-        'Improved overall workflow efficiency within the quality assurance unit',
-      ],
-    },
-    {
-      role: 'Asset Management (Student Staff)',
-      company: 'Telkom University Logistics',
-      period: 'March 2025 – October 2025',
-      location: 'Surabaya, Indonesia',
-      highlights: [
-        'Managed precise recording and cataloging of institutional assets for academic and operational needs',
-        'Maintained accuracy of asset management system with real-time updates',
-        'Conducted inventory verification to ensure data integrity and audit readiness',
-      ],
-    },
-  ]
+  const reveal = useScrollReveal();
 
   return (
-    <section id="experience" className="md:ml-64 px-6 py-20">
-      <div className="max-w-4xl mx-auto">
+    <section id="experience" className="px-6 py-20">
+      <div ref={reveal} className="reveal max-w-4xl mx-auto">
         <div className="mb-12">
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-2">Experience</h2>
           <div className="w-12 h-1 bg-accent rounded-full"></div>
@@ -59,5 +39,5 @@ export default function Experience() {
         </div>
       </div>
     </section>
-  )
+  );
 }
