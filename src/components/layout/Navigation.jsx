@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { navItems } from "@/data/navigation";
 import { useActiveSection } from "@/hooks/useActiveSection";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 
 const sectionIds = navItems.map((item) => item.href.replace("#", ""));
 
@@ -19,24 +20,24 @@ export default function Navigation() {
 
   return (
     <nav
-      className={`sticky top-0 z-50 w-full animate-slide-down transition-all duration-300 ${
+      className={`sticky top-0 z-50 w-full animate-slide-down transition-colors duration-300 ${
         scrolled
-          ? "bg-background/80 backdrop-blur-xl border-b border-border shadow-lg shadow-black/5"
-          : "bg-transparent border-b border-transparent"
+          ? "border-b border-border bg-background/80 backdrop-blur-xl"
+          : "border-b border-transparent bg-transparent"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-6 py-4">
-        <div className="flex items-center justify-between">
-          {/* Logo */}
+      <div className="mx-auto max-w-4xl px-6">
+        <div className="flex h-16 items-center justify-between">
+          {/* Wordmark */}
           <a
             href="#hero"
-            className="text-2xl font-bold text-foreground tracking-tight hover:text-accent transition-colors"
+            className="font-mono text-sm font-semibold tracking-tight text-foreground transition-colors hover:text-accent"
           >
-            Zumar<span className="text-accent">.</span>
+            zumar<span className="text-accent">.</span>nf
           </a>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
+          {/* Desktop navigation */}
+          <div className="hidden items-center gap-8 md:flex">
             {navItems.map((item) => {
               const isActive = activeId === item.href.replace("#", "");
               return (
@@ -44,37 +45,41 @@ export default function Navigation() {
                   key={item.href}
                   href={item.href}
                   aria-current={isActive ? "true" : undefined}
-                  className={`group relative text-sm font-medium transition-colors ${
+                  className={`group relative font-mono text-xs uppercase tracking-[0.15em] transition-colors ${
                     isActive
-                      ? "text-accent"
+                      ? "text-foreground"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   {item.label}
                   <span
-                    className={`absolute -bottom-1.5 left-0 h-0.5 rounded-full bg-accent transition-all duration-300 ${
+                    className={`absolute -bottom-1.5 left-0 h-px bg-accent transition-all duration-300 ${
                       isActive ? "w-full" : "w-0 group-hover:w-full"
                     }`}
                   />
                 </a>
               );
             })}
+            <ThemeToggle />
           </div>
 
-          {/* Mobile toggle */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            aria-label={isOpen ? "Close menu" : "Open menu"}
-            aria-expanded={isOpen}
-            className="md:hidden p-2 rounded-lg text-foreground hover:bg-muted transition-colors"
-          >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          {/* Mobile controls */}
+          <div className="flex items-center gap-2 md:hidden">
+            <ThemeToggle />
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              aria-label={isOpen ? "Close menu" : "Open menu"}
+              aria-expanded={isOpen}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border text-foreground transition-colors hover:border-accent"
+            >
+              {isOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            </button>
+          </div>
         </div>
 
-        {/* Mobile Navigation */}
+        {/* Mobile navigation */}
         {isOpen && (
-          <div className="md:hidden mt-4 p-2 rounded-xl border border-border bg-card/80 backdrop-blur-xl animate-slide-down space-y-1">
+          <div className="mb-4 space-y-1 rounded-lg border border-border bg-card/90 p-2 backdrop-blur-xl animate-slide-down md:hidden">
             {navItems.map((item) => {
               const isActive = activeId === item.href.replace("#", "");
               return (
@@ -83,10 +88,10 @@ export default function Navigation() {
                   href={item.href}
                   onClick={() => setIsOpen(false)}
                   aria-current={isActive ? "true" : undefined}
-                  className={`block text-sm font-medium rounded-lg px-4 py-3 transition-colors ${
+                  className={`block rounded-md px-4 py-3 font-mono text-xs uppercase tracking-[0.15em] transition-colors ${
                     isActive
-                      ? "text-accent bg-accent/10"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                      ? "bg-muted text-foreground"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   }`}
                 >
                   {item.label}

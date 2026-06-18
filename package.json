@@ -11,13 +11,7 @@
   "dependencies": {
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "flowbite": "^2.2.1",
-    "flowbite-react": "^0.10.0",
-    "class-variance-authority": "0.7.1",
-    "clsx": "2.1.1",
-    "lucide-react": "0.553.0",
-    "tailwind-merge": "3.4.0",
-    "tailwindcss-animate": "1.0.7"
+    "lucide-react": "0.553.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.2.1",

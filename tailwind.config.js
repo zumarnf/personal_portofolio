@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ["./index.html", "./src/**/*.{js,jsx}", "node_modules/flowbite-react/lib/esm/**/*.js", "*.{js,ts,jsx,tsx,mdx}"],
+  content: ["./index.html", "./src/**/*.{js,jsx}"],
   theme: {
     extend: {
       colors: {
@@ -25,10 +25,11 @@ export default {
         ring: "hsl(var(--ring))",
       },
       fontFamily: {
-        sans: ["'Inter', system-ui, sans-serif"],
+        sans: ["Manrope", "system-ui", "sans-serif"],
+        mono: ["'JetBrains Mono'", "ui-monospace", "monospace"],
       },
     },
   },
-  plugins: [require("flowbite/plugin")],
-  darkMode: "class"
-}
+  plugins: [],
+  darkMode: "class",
+};

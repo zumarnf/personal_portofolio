@@ -1,1 +1,5 @@
 node_modules/
+.claude/
+plans/
+dist/
+skills-lock.json

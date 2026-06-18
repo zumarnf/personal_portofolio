@@ -1,90 +1,78 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
+
+const stats = [
+  { value: "03", label: "Internships & roles" },
+  { value: "02", label: "Projects shipped" },
+  { value: "3.83", label: "GPA (graduated)" },
+];
 
 export default function Hero() {
   return (
-    <section
-      id="hero"
-      className="min-h-screen flex items-center justify-center px-6 py-20"
-    >
-      <div className="max-w-4xl w-full">
-        <div className="mb-8 animate-fade-in-up">
-          <span className="inline-block text-xs font-mono text-accent mb-4 uppercase tracking-wider">
-            Welcome to my portfolio
-          </span>
-          <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-6 leading-tight text-balance">
-            Frontend Web Developer
+    <section id="hero" className="flex min-h-screen items-center px-6 pt-16">
+      <div className="mx-auto w-full max-w-4xl">
+        <div className="animate-fade-in-up">
+          <p className="mb-6 inline-flex items-center gap-2.5 font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
+            </span>
+            Available for new projects
+          </p>
+          <h1 className="text-balance text-5xl font-semibold tracking-tight text-foreground md:text-7xl">
+            Zumar Nur Firdaus
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl leading-relaxed mb-8 text-balance">
-            Results-driven IT graduate building elegant, user-centric web
-            experiences with React and TypeScript, backed by clean, efficient
-            code and a sharp eye for detail. Based in Gresik, East Java.
+          <p className="mt-4 text-xl text-muted-foreground md:text-2xl">
+            Frontend Developer
+          </p>
+          <p className="mt-3 inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.2em] text-accent">
+            <span className="h-px w-6 bg-accent/50" />
+            Vibe Coder
           </p>
         </div>
 
+        <p
+          className="mt-8 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground animate-fade-in-up md:text-lg"
+          style={{ animationDelay: "0.1s" }}
+        >
+          IT graduate building elegant, user-centric web experiences with React
+          and TypeScript — backed by clean, efficient code and a sharp eye for
+          detail. Based in Gresik, East Java.
+        </p>
+
         <div
-          className="flex flex-col sm:flex-row gap-4 animate-fade-in-up"
-          style={{ animationDelay: "0.15s" }}
+          className="mt-10 flex flex-col gap-3 sm:flex-row animate-fade-in-up"
+          style={{ animationDelay: "0.2s" }}
         >
           <a
             href="#contact"
-            className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-opacity-90 transition-all duration-300 font-semibold"
+            className="group inline-flex items-center justify-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-transform active:scale-[0.98]"
           >
-            Get in Touch
-            <ArrowRight className="w-4 h-4" />
+            Get in touch
+            <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
           </a>
           <a
             href="#projects"
-            className="inline-flex items-center justify-center gap-2 px-8 py-3 border border-border text-foreground rounded-lg hover:bg-muted transition-all duration-300 font-semibold"
+            className="inline-flex items-center justify-center rounded-md border border-border px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:border-accent hover:text-accent"
           >
-            View My Work
+            View work
           </a>
         </div>
 
-        <div
-          className="mt-20 pt-12 border-t border-border animate-fade-in-up"
+        <dl
+          className="mt-20 grid grid-cols-3 gap-px overflow-hidden rounded-lg border border-border bg-border animate-fade-in-up"
           style={{ animationDelay: "0.3s" }}
         >
-          <p className="text-xs text-muted-foreground uppercase tracking-widest mb-8 font-medium">
-            Quick Stats
-          </p>
-          <div className="grid grid-cols-3 gap-6 md:gap-10">
-            {/* Stat Card 1 */}
-            <div className="group">
-              <div className="bg-gradient-to-br from-accent/10 to-transparent p-6 rounded-xl border border-accent/20 hover:border-accent/40 transition-all duration-300 hover:shadow-lg hover:shadow-accent/5 hover:-translate-y-1">
-                <p className="text-4xl md:text-5xl font-bold text-accent mb-3">
-                  3
-                </p>
-                <p className="text-xs md:text-sm text-muted-foreground font-medium">
-                  Internships & Roles
-                </p>
-              </div>
+          {stats.map((stat) => (
+            <div key={stat.label} className="bg-background p-5 md:p-6">
+              <dt className="font-mono text-3xl font-semibold text-foreground md:text-4xl">
+                {stat.value}
+              </dt>
+              <dd className="mt-2 text-xs text-muted-foreground md:text-sm">
+                {stat.label}
+              </dd>
             </div>
-
-            {/* Stat Card 2 */}
-            <div className="group">
-              <div className="bg-gradient-to-br from-accent/10 to-transparent p-6 rounded-xl border border-accent/20 hover:border-accent/40 transition-all duration-300 hover:shadow-lg hover:shadow-accent/5 hover:-translate-y-1">
-                <p className="text-4xl md:text-5xl font-bold text-accent mb-3">
-                  2
-                </p>
-                <p className="text-xs md:text-sm text-muted-foreground font-medium">
-                  Projects Completed
-                </p>
-              </div>
-            </div>
-
-            {/* Stat Card 3 */}
-            <div className="group">
-              <div className="bg-gradient-to-br from-accent/10 to-transparent p-6 rounded-xl border border-accent/20 hover:border-accent/40 transition-all duration-300 hover:shadow-lg hover:shadow-accent/5 hover:-translate-y-1">
-                <p className="text-4xl md:text-5xl font-bold text-accent mb-3">
-                  3.83
-                </p>
-                <p className="text-xs md:text-sm text-muted-foreground font-medium">
-                  GPA (Graduated)
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+          ))}
+        </dl>
       </div>
     </section>
   );

@@ -1,0 +1,12 @@
+# Normalize line endings: store text files as LF in the repo and check them
+# out as LF, so Windows (core.autocrlf) stops warning about LF -> CRLF.
+* text=auto eol=lf
+
+# Treat common asset types as binary (never line-ending converted).
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary

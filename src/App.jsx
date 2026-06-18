@@ -9,19 +9,17 @@ import Contact from "@/components/sections/Contact";
 
 export default function App() {
   return (
-    <div className="dark">
-      <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
-        <Navigation />
-        <main className="w-full">
-          <Hero />
-          <About />
-          <Experience />
-          <Projects />
-          <Skills />
-          <Contact />
-          <Footer />
-        </main>
-      </div>
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+      <Navigation />
+      <main className="w-full">
+        <Hero />
+        <About />
+        <Experience />
+        <Projects />
+        <Skills />
+        <Contact />
+      </main>
+      <Footer />
     </div>
   );
 }

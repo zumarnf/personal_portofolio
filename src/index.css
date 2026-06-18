@@ -2,60 +2,68 @@
 @tailwind components;
 @tailwind utilities;
 
-@custom-variant dark (&:is(.dark *));
-
+/* Warm monochrome palette + a single restrained ink-blue accent.
+   Light is the default; the `.dark` class on <html> swaps the tokens. */
 :root {
-  /* Minimalist elegant palette */
-  --background: 0 0% 98%;
-  --foreground: 240 10% 15%;
-  --card: 0 0% 100%;
-  --card-foreground: 240 10% 15%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 240 10% 15%;
-  --primary: 240 10% 25%;
-  --primary-foreground: 0 0% 98%;
-  --secondary: 240 5% 90%;
-  --secondary-foreground: 240 10% 25%;
-  --muted: 240 5% 92%;
-  --muted-foreground: 240 5% 50%;
-  --accent: 38 92% 50%;
-  --accent-foreground: 0 0% 98%;
-  --destructive: 0 84% 60%;
+  --background: 40 20% 97%;
+  --foreground: 30 8% 13%;
+  --card: 40 22% 99%;
+  --card-foreground: 30 8% 13%;
+  --popover: 40 22% 99%;
+  --popover-foreground: 30 8% 13%;
+  --primary: 30 8% 13%;
+  --primary-foreground: 40 20% 97%;
+  --secondary: 40 12% 92%;
+  --secondary-foreground: 30 8% 20%;
+  --muted: 40 12% 93%;
+  --muted-foreground: 35 6% 42%;
+  --accent: 222 39% 44%;
+  --accent-foreground: 40 20% 98%;
+  --destructive: 0 70% 48%;
   --destructive-foreground: 0 0% 98%;
-  --border: 240 5% 95%;
-  --input: 240 5% 96%;
-  --ring: 240 10% 25%;
-  --radius: 0.625rem;
+  --border: 36 14% 87%;
+  --input: 36 14% 87%;
+  --ring: 222 39% 44%;
+  --radius: 0.5rem;
 }
 
 .dark {
-  --background: 240 10% 12%;
-  --foreground: 0 0% 95%;
-  --card: 240 10% 15%;
-  --card-foreground: 0 0% 95%;
-  --popover: 240 10% 15%;
-  --popover-foreground: 0 0% 95%;
-  --primary: 38 92% 50%;
-  --primary-foreground: 240 10% 12%;
-  --secondary: 240 10% 20%;
-  --secondary-foreground: 0 0% 95%;
-  --muted: 240 10% 25%;
-  --muted-foreground: 240 5% 65%;
-  --accent: 38 92% 60%;
-  --accent-foreground: 240 10% 12%;
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 0 0% 95%;
-  --border: 240 10% 20%;
-  --input: 240 10% 18%;
-  --ring: 38 92% 50%;
+  --background: 30 7% 9%;
+  --foreground: 40 14% 90%;
+  --card: 30 7% 12%;
+  --card-foreground: 40 14% 90%;
+  --popover: 30 7% 12%;
+  --popover-foreground: 40 14% 90%;
+  --primary: 40 14% 90%;
+  --primary-foreground: 30 7% 10%;
+  --secondary: 30 6% 17%;
+  --secondary-foreground: 40 14% 90%;
+  --muted: 30 6% 16%;
+  --muted-foreground: 38 9% 60%;
+  --accent: 218 52% 67%;
+  --accent-foreground: 30 7% 10%;
+  --destructive: 0 65% 58%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 32 6% 20%;
+  --input: 32 6% 20%;
+  --ring: 218 52% 67%;
 }
 
 @layer base {
   * {
     @apply border-border;
   }
+
+  html {
+    scroll-behavior: smooth;
+    /* Keep anchored sections clear of the sticky navbar */
+    scroll-padding-top: 5rem;
+  }
+
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "cv11", "ss01";
+    -webkit-font-smoothing: antialiased;
   }
 
   h1,
@@ -64,11 +72,15 @@
   h4,
   h5,
   h6 {
-    @apply font-semibold;
+    @apply font-semibold tracking-tight;
   }
 
   a {
     @apply transition-colors;
+  }
+
+  ::selection {
+    @apply bg-accent/20;
   }
 }
 
@@ -83,19 +95,10 @@
   }
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(24px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
@@ -104,16 +107,12 @@
 }
 
 .animate-slide-down {
-  animation: slideDown 0.5s ease-out;
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.6s ease-out;
+  animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .animate-fade-in-up {
   opacity: 0;
-  animation: fadeInUp 0.7s ease-out forwards;
+  animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Scroll-reveal: hidden until the element enters the viewport */
@@ -122,11 +121,13 @@
 }
 
 .reveal-visible {
-  animation: fadeInUp 0.7s ease-out forwards;
+  animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-fade-in,
+  html {
+    scroll-behavior: auto;
+  }
   .animate-slide-down,
   .animate-fade-in-up,
   .reveal-visible {
