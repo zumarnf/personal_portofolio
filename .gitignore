@@ -3,3 +3,5 @@ node_modules/
 plans/
 dist/
 skills-lock.json
+AGENTS.md
+.codex/

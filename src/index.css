@@ -149,37 +149,6 @@
   animation-delay: calc(var(--i, 0) * 0.05s);
 }
 
-/* Pensive figure standing in the rain (hero) */
-@keyframes figureSway {
-  0%,
-  100% {
-    transform: rotate(-1.5deg);
-  }
-  50% {
-    transform: rotate(1.5deg);
-  }
-}
-
-@keyframes umbrellaBob {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-2px);
-  }
-}
-
-.rain-figure {
-  transform-origin: 50% 100%;
-  animation: figureSway 6s ease-in-out infinite;
-}
-
-.rain-figure__umbrella {
-  transform-origin: 50% 60%;
-  animation: umbrellaBob 4s ease-in-out infinite;
-}
-
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -187,9 +156,7 @@
   .animate-slide-down,
   .animate-fade-in-up,
   .reveal-visible,
-  .reveal-visible .stagger,
-  .rain-figure,
-  .rain-figure__umbrella {
+  .reveal-visible .stagger {
     animation: none;
   }
   .animate-fade-in-up,
