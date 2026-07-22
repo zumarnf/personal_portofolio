@@ -79,6 +79,12 @@
     @apply transition-colors;
   }
 
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
   ::selection {
     @apply bg-accent/20;
   }
@@ -124,17 +130,71 @@
   animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* Staggered children inside a revealed container */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.reveal .stagger {
+  opacity: 0;
+}
+
+.reveal-visible .stagger {
+  animation: fadeIn 0.5s ease-out forwards;
+  animation-delay: calc(var(--i, 0) * 0.05s);
+}
+
+/* Pensive figure standing in the rain (hero) */
+@keyframes figureSway {
+  0%,
+  100% {
+    transform: rotate(-1.5deg);
+  }
+  50% {
+    transform: rotate(1.5deg);
+  }
+}
+
+@keyframes umbrellaBob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+.rain-figure {
+  transform-origin: 50% 100%;
+  animation: figureSway 6s ease-in-out infinite;
+}
+
+.rain-figure__umbrella {
+  transform-origin: 50% 60%;
+  animation: umbrellaBob 4s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
   .animate-slide-down,
   .animate-fade-in-up,
-  .reveal-visible {
+  .reveal-visible,
+  .reveal-visible .stagger,
+  .rain-figure,
+  .rain-figure__umbrella {
     animation: none;
   }
   .animate-fade-in-up,
-  .reveal {
+  .reveal,
+  .reveal .stagger {
     opacity: 1;
   }
 }

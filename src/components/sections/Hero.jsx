@@ -1,9 +1,11 @@
 import { ArrowUpRight } from "lucide-react";
+import Counter from "@/components/ui/Counter";
+import Magnetic from "@/components/ui/Magnetic";
 
 const stats = [
-  { value: "03", label: "Internships & roles" },
-  { value: "02", label: "Projects shipped" },
-  { value: "3.83", label: "GPA (graduated)" },
+  { target: 3, pad: 2, label: "Internships & roles" },
+  { target: 2, pad: 2, label: "Projects shipped" },
+  { target: 3.83, decimals: 2, label: "GPA (graduated)" },
 ];
 
 export default function Hero() {
@@ -43,19 +45,26 @@ export default function Hero() {
           className="mt-10 flex flex-col gap-3 sm:flex-row animate-fade-in-up"
           style={{ animationDelay: "0.2s" }}
         >
-          <a
-            href="#contact"
-            className="group inline-flex items-center justify-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-transform active:scale-[0.98]"
-          >
-            Get in touch
-            <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-          </a>
-          <a
-            href="#projects"
-            className="inline-flex items-center justify-center rounded-md border border-border px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:border-accent hover:text-accent"
-          >
-            View work
-          </a>
+          <Magnetic>
+            <a
+              href="#contact"
+              className="group inline-flex items-center justify-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-transform active:scale-[0.98]"
+            >
+              Get in touch
+              <ArrowUpRight
+                className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                aria-hidden="true"
+              />
+            </a>
+          </Magnetic>
+          <Magnetic>
+            <a
+              href="#projects"
+              className="inline-flex items-center justify-center rounded-md border border-border px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:border-accent hover:text-accent"
+            >
+              View work
+            </a>
+          </Magnetic>
         </div>
 
         <dl
@@ -65,7 +74,11 @@ export default function Hero() {
           {stats.map((stat) => (
             <div key={stat.label} className="bg-background p-5 md:p-6">
               <dt className="font-mono text-3xl font-semibold text-foreground md:text-4xl">
-                {stat.value}
+                <Counter
+                  target={stat.target}
+                  decimals={stat.decimals}
+                  pad={stat.pad}
+                />
               </dt>
               <dd className="mt-2 text-xs text-muted-foreground md:text-sm">
                 {stat.label}

@@ -14,7 +14,7 @@ export default function Contact() {
       </p>
 
       <div className="mt-10 grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-3">
-        {contactInfo.map((info) => {
+        {contactInfo.map((info, index) => {
           const Icon = info.icon;
           const isLink = Boolean(info.href) && info.href !== "#";
           const Wrapper = isLink ? "a" : "div";
@@ -23,12 +23,16 @@ export default function Contact() {
             <Wrapper
               key={info.label}
               href={isLink ? info.href : undefined}
-              className="group flex flex-col gap-4 bg-background p-6 transition-colors hover:bg-card"
+              className="stagger group flex flex-col gap-4 bg-background p-6 transition-colors hover:bg-card"
+              style={{ "--i": index }}
             >
               <span className="flex items-center justify-between">
-                <Icon className="h-5 w-5 text-accent" />
+                <Icon className="h-5 w-5 text-accent" aria-hidden="true" />
                 {isLink && (
-                  <ArrowUpRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent" />
+                  <ArrowUpRight
+                    className="h-4 w-4 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent"
+                    aria-hidden="true"
+                  />
                 )}
               </span>
               <span>

@@ -9,10 +9,11 @@ export default function Skills() {
       <SectionHeading index="04" label="Skills" title="Tools & expertise" />
 
       <div className="divide-y divide-border border-y border-border">
-        {skillCategories.map((category) => (
+        {skillCategories.map((category, index) => (
           <div
             key={category.category}
-            className="grid gap-4 py-6 md:grid-cols-[1fr_2fr] md:gap-8"
+            className="stagger grid gap-4 py-6 md:grid-cols-[1fr_2fr] md:gap-8"
+            style={{ "--i": index }}
           >
             <h3 className="font-mono text-xs uppercase tracking-[0.12em] text-muted-foreground">
               {category.category}

@@ -11,7 +11,8 @@ export default function Experience() {
         {experiences.map((exp, index) => (
           <article
             key={index}
-            className="grid gap-3 border-t border-border pt-8 md:grid-cols-[1fr_2fr] md:gap-8"
+            className="stagger grid gap-3 border-t border-border pt-8 md:grid-cols-[1fr_2fr] md:gap-8"
+            style={{ "--i": index }}
           >
             <div>
               <p className="font-mono text-xs uppercase tracking-[0.12em] text-muted-foreground">

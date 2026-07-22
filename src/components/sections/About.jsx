@@ -16,8 +16,12 @@ export default function About() {
       </div>
 
       <div className="mt-14 grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
-        {aboutHighlights.map((item) => (
-          <div key={item.label} className="bg-background p-6 transition-colors hover:bg-card">
+        {aboutHighlights.map((item, index) => (
+          <div
+            key={item.label}
+            className="stagger bg-background p-6 transition-colors hover:bg-card"
+            style={{ "--i": index }}
+          >
             <p className="text-sm font-medium text-foreground">{item.label}</p>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
               {item.description}

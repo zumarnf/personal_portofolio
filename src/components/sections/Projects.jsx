@@ -12,7 +12,8 @@ export default function Projects() {
         {projects.map((project, index) => (
           <article
             key={index}
-            className="group grid gap-4 border-b border-border py-8 md:grid-cols-[auto_1fr] md:gap-8"
+            className="stagger group grid gap-4 border-b border-border py-8 md:grid-cols-[auto_1fr] md:gap-8"
+            style={{ "--i": index }}
           >
             <span className="font-mono text-sm text-muted-foreground">
               {String(index + 1).padStart(2, "0")}

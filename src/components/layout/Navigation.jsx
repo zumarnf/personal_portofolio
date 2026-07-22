@@ -53,8 +53,8 @@ export default function Navigation() {
                 >
                   {item.label}
                   <span
-                    className={`absolute -bottom-1.5 left-0 h-px bg-accent transition-all duration-300 ${
-                      isActive ? "w-full" : "w-0 group-hover:w-full"
+                    className={`absolute -bottom-1.5 left-0 h-px w-full origin-left bg-accent transition-transform duration-300 ${
+                      isActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
                     }`}
                   />
                 </a>
@@ -72,7 +72,11 @@ export default function Navigation() {
               aria-expanded={isOpen}
               className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border text-foreground transition-colors hover:border-accent"
             >
-              {isOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+              {isOpen ? (
+                <X className="h-4 w-4" aria-hidden="true" />
+              ) : (
+                <Menu className="h-4 w-4" aria-hidden="true" />
+              )}
             </button>
           </div>
         </div>
