@@ -9,10 +9,9 @@ import Skills from "@/components/sections/Skills";
 import Contact from "@/components/sections/Contact";
 
 import ScrollProgress from "@/components/ui/ScrollProgress";
-import ScrollFigure from "@/components/ui/ScrollFigure";
 
-// Code-split the WebGL background so three.js stays out of the initial bundle.
-const RainScene = lazy(() => import("@/components/three/RainScene"));
+// Code-split the sky so three.js and GSAP stay out of the initial bundle.
+const SkyScene = lazy(() => import("@/components/sky/SkyScene"));
 
 export default function App() {
   return (
@@ -26,18 +25,10 @@ export default function App() {
 
       <ScrollProgress />
 
-      {/* Fixed rain background, behind all content */}
-      <div
-        className="pointer-events-none fixed inset-0 z-0 opacity-90"
-        aria-hidden="true"
-      >
-        <Suspense fallback={null}>
-          <RainScene />
-        </Suspense>
-      </div>
-
-      {/* Scroll-reactive corner mascot */}
-      <ScrollFigure />
+      {/* Theme sky behind all content: moon + rain, or sun + spring petals */}
+      <Suspense fallback={null}>
+        <SkyScene />
+      </Suspense>
 
       <div className="relative z-10">
         <Navigation />

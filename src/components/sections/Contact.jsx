@@ -13,7 +13,7 @@ export default function Contact() {
         have a question or just want to say hello, feel free to reach out.
       </p>
 
-      <div className="mt-10 grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-3">
+      <div className="mt-10 grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-2">
         {contactInfo.map((info, index) => {
           const Icon = info.icon;
           const isLink = Boolean(info.href) && info.href !== "#";

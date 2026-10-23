@@ -1,12 +1,6 @@
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, MapPin } from "lucide-react";
 
 export const contactInfo = [
-  {
-    icon: Phone,
-    label: "Phone",
-    value: "+6283847122467",
-    href: "tel:+6283847122467",
-  },
   {
     icon: Mail,
     label: "Email",

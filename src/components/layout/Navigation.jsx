@@ -3,6 +3,7 @@ import { Menu, X } from "lucide-react";
 import { navItems } from "@/data/navigation";
 import { useActiveSection } from "@/hooks/useActiveSection";
 import ThemeToggle from "@/components/ui/ThemeToggle";
+import MotionToggle from "@/components/ui/MotionToggle";
 
 const sectionIds = navItems.map((item) => item.href.replace("#", ""));
 
@@ -60,11 +61,15 @@ export default function Navigation() {
                 </a>
               );
             })}
-            <ThemeToggle />
+            <div className="flex items-center gap-3">
+              <MotionToggle />
+              <ThemeToggle />
+            </div>
           </div>
 
           {/* Mobile controls */}
-          <div className="flex items-center gap-2 md:hidden">
+          <div className="flex items-center gap-3 md:hidden">
+            <MotionToggle />
             <ThemeToggle />
             <button
               onClick={() => setIsOpen(!isOpen)}

@@ -25,6 +25,18 @@
   --input: 36 14% 87%;
   --ring: 222 39% 44%;
   --radius: 0.5rem;
+
+  /* Theme sky (decorative). Identical in both themes: each body only shows in
+     its own theme, and its strength is capped by .sky-body below. */
+  --sky-sun: 37 88% 63%;
+  --sky-sun-core: 45 96% 80%;
+  --sky-sun-halo: 42 95% 70%;
+  --sky-moon: 40 26% 86%;
+  --sky-moon-crater: 36 12% 66%;
+  --sky-moon-halo: 218 52% 67%;
+  --sky-moon-shade: 30 10% 4%;
+  --sky-petal: 348 70% 84%;
+  --sky-petal-deep: 346 52% 72%;
 }
 
 .dark {
@@ -149,9 +161,105 @@
   animation-delay: calc(var(--i, 0) * 0.05s);
 }
 
+/* Theme switch (TIMING.pageFade in skyMotion.js, see useTheme.js).
+   Surfaces fade over 400ms; text changes once, at 140ms. Fading text with the
+   background re-rasterised every glyph each frame (measured ~30fps) and drove
+   it to 1:1 contrast mid-fade. Swapping it when the background passes the
+   luminance where old and new text read equally keeps the floor at 1.35:1 and
+   the fade at 60fps (both measured, plans/theme-sky-scene/planning.md). */
+.theme-switching,
+.theme-switching *,
+.theme-switching *::before,
+.theme-switching *::after {
+  transition-property: background-color, border-color, color, fill, stroke,
+    text-decoration-color !important;
+  transition-duration: 400ms, 400ms, 0s, 0s, 0s, 0s !important;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transition-delay: 0s, 0s, 140ms, 140ms, 140ms, 140ms !important;
+}
+
+/* ---------- Theme sky (src/components/sky) ---------- */
+.sky-scene {
+  container-type: size;
+}
+
+/* Below 1280px the body has to pass behind text. 12% opacity is the most that
+   keeps every text colour at >= 4.5:1 over it in both themes (computed in
+   plans/theme-sky-scene/planning.md), so it is drawn large and faint there. */
+.sky-body {
+  --sky-d: clamp(120px, 34cqw, 220px);
+  --sky-cx: calc(100cqw - var(--sky-d) * 0.4);
+  --sky-cy: calc(var(--sky-d) * 0.5 + 24px);
+  position: absolute;
+  left: calc(var(--sky-cx) - var(--sky-d) * 1.1364);
+  top: calc(var(--sky-cy) - var(--sky-d) * 1.1364);
+  width: calc(var(--sky-d) * 2.2727);
+  height: calc(var(--sky-d) * 2.2727);
+  opacity: 0.12;
+}
+
+/* Full strength only where the core and its whole rise path fit in the right
+   margin, 16px clear of the 896px column (maxFullBodyDiameter in skyMotion.js). */
+@media (min-width: 1280px) {
+  .sky-body {
+    --sky-margin: calc((100cqw - 896px) / 2);
+    --sky-d: min(128px, calc((var(--sky-margin) - 32px) / 1.7));
+    --sky-cx: calc(100cqw - var(--sky-margin) / 2);
+    --sky-cy: calc(var(--sky-d) * 0.6 + 104px);
+    opacity: 1;
+  }
+}
+
+.sky-body__inner {
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.sky-rays,
+.sky-halo {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.sky-rays {
+  animation: skySpin 90s linear infinite;
+}
+
+.sky-halo {
+  animation: skyBreathe 6s cubic-bezier(0.37, 0, 0.63, 1) infinite alternate;
+}
+
+[data-sky-motion="paused"] .sky-rays,
+[data-sky-motion="paused"] .sky-halo {
+  animation-play-state: paused;
+}
+
+@keyframes skySpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes skyBreathe {
+  from {
+    transform: scale(0.94);
+    opacity: 0.8;
+  }
+  to {
+    transform: scale(1.04);
+    opacity: 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+  .sky-rays,
+  .sky-halo {
+    animation: none;
   }
   .animate-slide-down,
   .animate-fade-in-up,
