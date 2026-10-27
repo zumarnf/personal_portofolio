@@ -1,6 +1,10 @@
+import { lazy, Suspense, useRef } from "react";
 import { ArrowUpRight } from "lucide-react";
 import Counter from "@/components/ui/Counter";
 import Magnetic from "@/components/ui/Magnetic";
+
+// Lazy like the sky: GSAP stays out of the initial bundle.
+const HeroFrog = lazy(() => import("@/components/sky/HeroFrog"));
 
 const stats = [
   { target: 3, pad: 2, label: "Internships & roles" },
@@ -9,8 +13,13 @@ const stats = [
 ];
 
 export default function Hero() {
+  const buttonsRef = useRef(null);
+  const statsRef = useRef(null);
+
   return (
-    <section id="hero" className="flex min-h-screen items-center px-6 pt-16">
+    // overflow-x-clip: the butterfly flies in from beyond the right edge, which
+    // must never widen the page on phones.
+    <section id="hero" className="flex min-h-screen items-center overflow-x-clip px-6 pt-16">
       <div className="mx-auto w-full max-w-4xl">
         <div className="animate-fade-in-up">
           <p className="mb-6 inline-flex items-center gap-2.5 font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
@@ -41,51 +50,61 @@ export default function Hero() {
           detail. Based in Gresik, East Java.
         </p>
 
-        <div
-          className="mt-10 flex flex-col gap-3 sm:flex-row animate-fade-in-up"
-          style={{ animationDelay: "0.2s" }}
-        >
-          <Magnetic>
-            <a
-              href="#contact"
-              className="group inline-flex items-center justify-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-transform active:scale-[0.98]"
-            >
-              Get in touch
-              <ArrowUpRight
-                className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-                aria-hidden="true"
-              />
-            </a>
-          </Magnetic>
-          <Magnetic>
-            <a
-              href="#projects"
-              className="inline-flex items-center justify-center rounded-md border border-border px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:border-accent hover:text-accent"
-            >
-              View work
-            </a>
-          </Magnetic>
-        </div>
-
-        <dl
-          className="mt-20 grid grid-cols-3 gap-px overflow-hidden rounded-lg border border-border bg-border animate-fade-in-up"
-          style={{ animationDelay: "0.3s" }}
-        >
-          {stats.map((stat) => (
-            <div key={stat.label} className="bg-background p-5 md:p-6">
-              <dt className="font-mono text-3xl font-semibold text-foreground md:text-4xl">
-                <Counter
-                  target={stat.target}
-                  decimals={stat.decimals}
-                  pad={stat.pad}
+        {/* Buttons and stats share one box: the frog perches on the stats card and
+            its butterfly flies in the empty space beside the buttons. */}
+        <div className="relative">
+          <div
+            ref={buttonsRef}
+            className="mt-10 flex flex-col gap-3 sm:flex-row animate-fade-in-up"
+            style={{ animationDelay: "0.2s" }}
+          >
+            <Magnetic>
+              <a
+                href="#contact"
+                className="group inline-flex items-center justify-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-transform active:scale-[0.98]"
+              >
+                Get in touch
+                <ArrowUpRight
+                  className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                  aria-hidden="true"
                 />
-              </dt>
-              <dd className="mt-2 text-xs text-muted-foreground md:text-sm">
-                {stat.label}
-              </dd>
-            </div>
-          ))}
-        </dl>
+              </a>
+            </Magnetic>
+            <Magnetic>
+              <a
+                href="#projects"
+                className="inline-flex items-center justify-center rounded-md border border-border px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:border-accent hover:text-accent"
+              >
+                View work
+              </a>
+            </Magnetic>
+          </div>
+
+          <dl
+            ref={statsRef}
+            className="mt-20 grid grid-cols-3 gap-px overflow-hidden rounded-lg border border-border bg-border animate-fade-in-up"
+            style={{ animationDelay: "0.3s" }}
+          >
+            {stats.map((stat) => (
+              <div key={stat.label} className="bg-background p-5 md:p-6">
+                <dt className="font-mono text-3xl font-semibold text-foreground md:text-4xl">
+                  <Counter
+                    target={stat.target}
+                    decimals={stat.decimals}
+                    pad={stat.pad}
+                  />
+                </dt>
+                <dd className="mt-2 text-xs text-muted-foreground md:text-sm">
+                  {stat.label}
+                </dd>
+              </div>
+            ))}
+          </dl>
+
+          <Suspense fallback={null}>
+            <HeroFrog buttonsRef={buttonsRef} statsRef={statsRef} />
+          </Suspense>
+        </div>
       </div>
     </section>
   );

@@ -21,6 +21,18 @@ MAX_SPEED_DIAMETERS = 2 * 1.25 * RISE_START_SLOPE / RISE_SECONDS
 MAX_OPACITY_RATE = RISE_START_SLOPE / RISE_SECONDS
 HEADROOM = 1.3
 
+# Hero frog contract (src/components/sky/frogMotion.js).
+FROG_LAYER = "[data-hero-frog]"
+FROG_FEET = 50 / 56
+FROG_MOUTH = (24, 37)
+FROG_EYES = ((21, 24.5), (39, 24.5))
+FROG_EYE_RADIUS = 7.6
+FROG_TONGUE_REACH = 24
+RAINDROP_CATCH = (4, 28)
+ZONE_GAP, ZONE_FLOOR, ZONE_SPAN = 14, 16, 240
+# Entrance at +1.0 s, 0.6 s long, then the longest wait before an action (9 s).
+FROG_ACTION_WINDOW_MS = 11_000
+
 
 def create_page(browser, viewport=DESKTOP, **context_options):
     context = browser.new_context(viewport=viewport, **context_options)
@@ -123,6 +135,249 @@ def assert_no_jumps(capture):
             assert fade <= max_fade * seconds + 0.02, (name, fade, previous, current)
             distance = ((b["x"] - a["x"]) ** 2 + (b["y"] - a["y"]) ** 2) ** 0.5
             assert distance <= max_speed * seconds + 1, (name, distance, previous, current)
+
+
+def overlaps(a, b, slack=1):
+    return (
+        a["left"] < b["right"] - slack
+        and b["left"] < a["right"] - slack
+        and a["top"] < b["bottom"] - slack
+        and b["top"] < a["bottom"] - slack
+    )
+
+
+def frog_geometry(page):
+    return page.evaluate(
+        """() => {
+            const layer = document.querySelector('[data-hero-frog]');
+            const rect = (el) => {
+                const b = el.getBoundingClientRect();
+                return { left: b.left, top: b.top, right: b.right, bottom: b.bottom,
+                         width: b.width, height: b.height };
+            };
+            const fly = layer.querySelector('[data-critter="butterfly"]');
+            const flyStyle = getComputedStyle(fly);
+            return {
+                frog: rect(layer.querySelector('[data-critter="frog"]')),
+                fly: rect(fly),
+                flyVisible: flyStyle.visibility === 'visible' && parseFloat(flyStyle.opacity) > 0.05,
+                stats: rect(document.querySelector('#hero dl')),
+                buttons: [...document.querySelectorAll('#hero a')].map(rect),
+                texts: [...document.querySelectorAll('#hero h1, #hero p, #hero a, #hero dt, #hero dd')]
+                    .map(rect),
+                mood: layer.dataset.frogMood,
+                motion: layer.dataset.frogMotion,
+            };
+        }"""
+    )
+
+
+def record_frog(page, duration_ms, click_at_ms=()):
+    """Samples the frog and butterfly every frame, toggling the theme on cue."""
+    return page.evaluate(
+        """({ durationMs, clickAt }) => new Promise((resolve) => {
+            const layer = document.querySelector('[data-hero-frog]');
+            const fly = layer.querySelector('[data-critter="butterfly"]');
+            const parts = {
+                body: layer.querySelector('.frog-body'),
+                pupil: layer.querySelector('.frog-pupil'),
+            };
+            const tongue = layer.querySelector('.frog-tongue');
+            const drop = layer.querySelector('.frog-drop');
+            const matrix = (el) => el.transform.baseVal.consolidate()?.matrix
+                ?? { a: 1, b: 0, e: 0, f: 0 };
+            const pending = [...clickAt];
+            const samples = [];
+            let start = null;
+            const frame = (now) => {
+                if (start === null) start = now;
+                const t = now - start;
+                while (pending.length && t >= pending[0]) {
+                    pending.shift();
+                    document.querySelector('button[aria-label^="Switch to"]').click();
+                }
+                const body = matrix(parts.body);
+                const pupil = matrix(parts.pupil);
+                const flyBox = fly.getBoundingClientRect();
+                const flyStyle = getComputedStyle(fly);
+                samples.push({
+                    t,
+                    bodyY: body.f,
+                    bodyTurn: Math.atan2(body.b, body.a) * 180 / Math.PI,
+                    pupil: [pupil.e, pupil.f],
+                    x2: +tongue.getAttribute('x2'),
+                    y2: +tongue.getAttribute('y2'),
+                    drop: parseFloat(getComputedStyle(drop).opacity),
+                    fly: [flyBox.left + flyBox.width / 2, flyBox.top + flyBox.height / 2],
+                    flyOpacity: flyStyle.visibility === 'hidden' ? 0 : parseFloat(flyStyle.opacity),
+                    motion: layer.dataset.frogMotion,
+                });
+                if (t < durationMs) requestAnimationFrame(frame);
+                else resolve(samples);
+            };
+            requestAnimationFrame(frame);
+        })""",
+        {"durationMs": duration_ms, "clickAt": list(click_at_ms)},
+    )
+
+
+def tongue_is_out(sample):
+    return abs(sample["x2"] - FROG_MOUTH[0]) > 0.5 or abs(sample["y2"] - FROG_MOUTH[1]) > 0.5
+
+
+def tongue_clearance(sample):
+    """Closest distance from either eye centre to the tongue, in SVG units."""
+    mx, my = FROG_MOUTH
+    dx, dy = sample["x2"] - mx, sample["y2"] - my
+    length_squared = dx * dx + dy * dy
+    closest = float("inf")
+    for ex, ey in FROG_EYES:
+        t = 0 if length_squared == 0 else max(0, min(1, ((ex - mx) * dx + (ey - my) * dy) / length_squared))
+        closest = min(closest, ((ex - (mx + t * dx)) ** 2 + (ey - (my + t * dy)) ** 2) ** 0.5)
+    return closest
+
+
+def assert_tongue_stays_off_the_face(samples):
+    for sample in filter(tongue_is_out, samples):
+        reach = ((sample["x2"] - FROG_MOUTH[0]) ** 2 + (sample["y2"] - FROG_MOUTH[1]) ** 2) ** 0.5
+        assert reach <= FROG_TONGUE_REACH + 1e-6, sample
+        assert tongue_clearance(sample) >= FROG_EYE_RADIUS + 1 - 1e-6, sample
+
+
+def run_frog_placement_check(browser):
+    """Perched on the stats card, never over text, no sideways scroll."""
+    viewports = [PHONE, {"width": 768, "height": 1024}, {"width": 1024, "height": 768}, DESKTOP]
+    for viewport in viewports:
+        for scheme in ("dark", "light"):
+            context, page, errors = create_page(browser, viewport=viewport, color_scheme=scheme)
+            page.wait_for_timeout(2_000)
+            geometry = frog_geometry(page)
+            feet = geometry["frog"]["top"] + geometry["frog"]["height"] * FROG_FEET
+            assert abs(feet - geometry["stats"]["top"]) <= 1.5, (viewport, scheme, feet, geometry["stats"])
+            assert geometry["frog"]["right"] <= geometry["stats"]["right"], (viewport, geometry)
+            assert geometry["mood"] == ("night" if scheme == "dark" else "day")
+            assert geometry["flyVisible"] == (scheme == "light"), (viewport, scheme)
+            width = page.evaluate("document.documentElement.scrollWidth")
+            assert width == viewport["width"], (viewport, width)
+            for _ in range(15):
+                geometry = frog_geometry(page)
+                critters = [geometry["frog"]] + ([geometry["fly"]] if geometry["flyVisible"] else [])
+                for critter in critters:
+                    for text in geometry["texts"]:
+                        assert not overlaps(critter, text), (viewport, scheme, critter, text)
+                page.wait_for_timeout(100)
+            assert not errors, errors
+            context.close()
+
+
+def run_frog_night_check(browser):
+    context, page, errors = create_page(browser, viewport=PHONE, color_scheme="dark")
+    samples = record_frog(page, FROG_ACTION_WINDOW_MS)
+    catches = [
+        current for previous, current in zip(samples, samples[1:])
+        if previous["drop"] > 0.5 and current["drop"] < 0.5
+    ]
+    assert catches, "the frog never caught a raindrop"
+    for catch in catches:
+        assert abs(catch["x2"] - RAINDROP_CATCH[0]) < 0.5, catch
+        assert abs(catch["y2"] - RAINDROP_CATCH[1]) < 0.5, catch
+    assert_tongue_stays_off_the_face(samples)
+    # Between catches it looks up at the rain.
+    looking_up = sum(s["pupil"][1] < 0 for s in samples)
+    assert looking_up > len(samples) * 0.6, looking_up
+    assert not any(s["flyOpacity"] > 0.05 for s in samples)
+    assert not errors, errors
+    context.close()
+
+
+def run_frog_day_check(browser):
+    context, page, errors = create_page(browser, viewport=PHONE, color_scheme="light")
+    samples = record_frog(page, FROG_ACTION_WINDOW_MS)
+    geometry = frog_geometry(page)
+    zone = {
+        "x0": max(max(b["right"] for b in geometry["buttons"]) + ZONE_GAP,
+                  geometry["frog"]["left"] - ZONE_SPAN),
+        "x1": geometry["stats"]["right"] - ZONE_GAP,
+        "y0": min(b["top"] for b in geometry["buttons"]) - ZONE_GAP,
+        "y1": geometry["stats"]["top"] - ZONE_FLOOR,
+    }
+    # Once it has flown in (entrance at +1.0 s, 0.9 s long) it stays in its band.
+    for sample in [s for s in samples if s["t"] > 2_500]:
+        x, y = sample["fly"]
+        assert zone["x0"] - 1 <= x <= zone["x1"] + 1, (sample, zone)
+        assert zone["y0"] - 1 <= y <= zone["y1"] + 1, (sample, zone)
+    assert any(s["bodyY"] < -6 for s in samples), "the frog never hopped at the butterfly"
+    assert_tongue_stays_off_the_face(samples)
+    pupils = {tuple(round(v, 1) for v in s["pupil"]) for s in samples}
+    assert len(pupils) > 5, "the eyes do not follow the butterfly"
+    assert not errors, errors
+    context.close()
+
+
+def run_frog_switch_check(browser):
+    context, page, errors = create_page(browser, color_scheme="dark")
+    page.wait_for_timeout(2_000)
+    samples = record_frog(page, 2_600, click_at_ms=(0, 1_300))
+    to_day = [s for s in samples if s["t"] < 1_300]
+    to_night = [s for s in samples if s["t"] >= 1_300]
+    # Day: shakes the water off, butterfly flies in, all within the sky's 1 050 ms.
+    assert max(abs(s["bodyTurn"]) for s in to_day if s["t"] < 450) > 2
+    assert all(abs(s["bodyTurn"]) < 0.5 for s in to_day if s["t"] > 600)
+    assert all(s["flyOpacity"] > 0.95 for s in to_day if s["t"] > 1_050)
+    # Night: the butterfly leaves within its 0.5 s exit, the frog looks up.
+    assert all(s["flyOpacity"] < 0.05 for s in to_night if s["t"] > 1_300 + 600)
+    assert to_night[-1]["pupil"][1] < 0, to_night[-1]
+    assert not errors, errors
+    context.close()
+
+
+def run_frog_pause_check(browser):
+    context, page, errors = create_page(browser, color_scheme="light")
+    page.wait_for_timeout(2_500)
+    page.get_by_role("button", name="Pause background animation").first.click()
+    page.wait_for_timeout(150)
+    samples = record_frog(page, 700)
+    assert all(s["motion"] == "paused" for s in samples)
+    assert len({tuple(s["fly"]) for s in samples}) == 1, "the butterfly kept flying"
+    assert len({tuple(s["pupil"]) for s in samples}) == 1, "the eyes kept moving"
+    page.get_by_role("button", name="Pause background animation").first.click()
+    assert page.locator(FROG_LAYER).get_attribute("data-frog-motion") == "running"
+    assert not errors, errors
+    context.close()
+
+
+def run_frog_reduced_motion_check(browser):
+    for scheme in ("light", "dark"):
+        context, page, errors = create_page(
+            browser, viewport=PHONE, color_scheme=scheme, reduced_motion="reduce"
+        )
+        samples = record_frog(page, 900)
+        assert all(s["motion"] == "reduced" for s in samples)
+        assert len({(s["bodyY"], s["bodyTurn"]) for s in samples}) == 1, "the frog moved"
+        assert not any(tongue_is_out(s) for s in samples)
+        if scheme == "light":
+            assert all(s["flyOpacity"] == 1 for s in samples)
+            assert len({tuple(s["fly"]) for s in samples}) == 1, "the butterfly moved"
+        else:
+            assert all(s["flyOpacity"] == 0 for s in samples)
+        frog = page.locator('[data-critter="frog"]')
+        assert frog.evaluate("el => getComputedStyle(el).visibility") == "visible"
+        assert not errors, errors
+        context.close()
+
+
+def run_frog_offscreen_check(browser):
+    context, page, errors = create_page(browser, color_scheme="dark")
+    page.wait_for_timeout(2_000)
+    layer = page.locator(FROG_LAYER)
+    page.locator("#contact").scroll_into_view_if_needed()
+    page.wait_for_timeout(400)
+    assert layer.get_attribute("data-frog-motion") == "offscreen"
+    page.evaluate("window.scrollTo(0, 0)")
+    page.wait_for_timeout(400)
+    assert layer.get_attribute("data-frog-motion") == "running"
+    assert not errors, errors
+    context.close()
 
 
 def run_removed_content_check(browser):
@@ -328,6 +583,13 @@ with sync_playwright() as playwright:
     run_pause_check(chromium)
     run_contrast_budget_layout_check(chromium)
     run_touch_target_check(chromium)
+    run_frog_placement_check(chromium)
+    run_frog_night_check(chromium)
+    run_frog_day_check(chromium)
+    run_frog_switch_check(chromium)
+    run_frog_pause_check(chromium)
+    run_frog_reduced_motion_check(chromium)
+    run_frog_offscreen_check(chromium)
     chromium.close()
 
 print("sky scene browser checks passed")

@@ -37,6 +37,19 @@
   --sky-moon-shade: 30 10% 4%;
   --sky-petal: 348 70% 84%;
   --sky-petal-deep: 346 52% 72%;
+
+  /* Hero frog (decorative, src/components/sky/HeroFrog.jsx). It only sits in
+     empty space, so it needs no opacity cap. .dark swaps in a moonlit set. */
+  --critter-frog: 98 30% 52%;
+  --critter-frog-shade: 102 28% 40%;
+  --critter-belly: 70 45% 83%;
+  --critter-eye: 45 33% 98%;
+  --critter-ink: 25 30% 12%;
+  --critter-blush: 350 75% 80%;
+  --critter-tongue: 350 65% 66%;
+  --critter-drop: 218 52% 67%;
+  --critter-wing: 46 90% 74%;
+  --critter-wing-edge: 38 82% 60%;
 }
 
 .dark {
@@ -59,6 +72,14 @@
   --border: 32 6% 20%;
   --input: 32 6% 20%;
   --ring: 218 52% 67%;
+
+  --critter-frog: 110 20% 42%;
+  --critter-frog-shade: 112 20% 32%;
+  --critter-belly: 75 18% 64%;
+  --critter-eye: 40 14% 88%;
+  --critter-ink: 25 20% 8%;
+  --critter-blush: 350 30% 60%;
+  --critter-tongue: 350 40% 58%;
 }
 
 @layer base {
